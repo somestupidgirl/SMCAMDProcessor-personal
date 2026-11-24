@@ -857,7 +857,9 @@ actor ProcessorModel {
         let temp = getIOAcceleratorStat(key: "Temperature(C)")
         let power = getIOAcceleratorStat(key: "Total Power(W)")
         let util = getIOAcceleratorStat(key: "Device Utilization %")
-        let vram = getIOAcceleratorStat(key: "inUseVidMemoryBytes")
+        // AMDRadeonRDNA4 (RX 9000) reports its VRAM in use as vramUsedBytes: the accelerator family's own inUseVidMemoryBytes stays 0 there
+        let vramUsed = getIOAcceleratorStat(key: "vramUsedBytes")
+        let vram = vramUsed > 0 ? vramUsed : getIOAcceleratorStat(key: "inUseVidMemoryBytes")
         let fan = (temp > 0 && temp < 50.0) ? 0 : getIOAcceleratorStat(key: "Fan Speed(RPM)")
         
         cachedGPUStats = (temp, power, util, vram, fan, now)
